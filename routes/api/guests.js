@@ -22,18 +22,18 @@ router.post('/', [
             return res.status(400).json({ errors: errors.array() });
         }
 
+        //create object
         var {
             name,
             allergies,
             attending,
             party
         } = req.body;
-
         if (party) { party = party.split(',') }
 
 
         try {
-            //TODO: Check if party already exists
+            ///to:do Check if party already exists
             // let guests = await Guests.findOne({ guests: req._id });
             // if (guests) {
             //     return res.status(400).json({
