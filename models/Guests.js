@@ -11,6 +11,9 @@ const GuestsSchema = new mongoose.Schema({
     attending: {
         type: Boolean,
         required: true
+    },
+    party: {
+    	type: [String]
     }
 });
 
