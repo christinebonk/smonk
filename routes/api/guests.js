@@ -33,13 +33,13 @@ router.post('/', [
 
 
         try {
-            ///to:do Check if party already exists
-            // let guests = await Guests.findOne({ guests: req._id });
-            // if (guests) {
-            //     return res.status(400).json({
-            //         errors: [{ msg: "Guest already exists" }]
-            //     });
-            // }
+            // to:do Check if party already exists
+            let guests = await Guests.findOne({ name: name });
+            if (guests) {
+                return res.status(400).json({
+                    errors: [{ msg: "Guest already exists" }]
+                });
+            }
 
             //Create new party
             guests = new Guests({ name, allergies, attending, party });
