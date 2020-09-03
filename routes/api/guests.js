@@ -16,13 +16,13 @@ router.post('/', [
     ],
 
     async (req, res) => {
-    	//Handle validation errors
-    	const errors = validationResult(req);
+        //Handle validation errors
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        //create object
+        //Create object
         var {
             name,
             allergies,
@@ -33,12 +33,13 @@ router.post('/', [
 
 
         try {
-            // to:do Check if party already exists
+            //Check if party already exists
             let guests = await Guests.findOne({ name: name });
             if (guests) {
-                return res.status(400).json({
-                    errors: [{ msg: "Guest already exists" }]
-                });
+                //Update party
+                mongoose.set('useFindAndModify', false);
+                guests = await Guests.findOneAndUpdate({ name: name }, { $set: { allergies, attending, party } }, { new: true });
+                return res.json(guests);
             }
 
             //Create new party
@@ -51,5 +52,41 @@ router.post('/', [
             res.status(500).send('Server Error');
         }
     });
+
+// @route 	GET api/guests
+// @desc 	Get all guests
+// @access 	Public
+
+router.get('/', async (req, res) => {
+    try {
+        const guests = await Guests.find().populate('guests');
+        res.json(guests);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+// @route 	GET api/guests/party/:name
+// @desc 	Get profile by name
+// @access 	Public
+router.get('/party/:name', async (req, res) => {
+	//Clean Name
+	var name = req.params.name; 
+	name = name.replace("+", " ")
+
+    try {
+        const guests = await Guests.findOne({ name: name }).exec();
+        if(!guests) return res.status(400).json({msg: 'Guest not found '})
+        res.json(guests);
+    } catch (err) {
+        console.error(err.message);
+        if(err.kind == 'ObjectId') {
+        	res.status(400).json({msg: 'Guest not found '});
+        }
+        res.status(500).send('Server Error')
+    }
+});
 
 module.exports = router;
