@@ -74,7 +74,7 @@ router.get('/', async (req, res) => {
 router.get('/party/:name', async (req, res) => {
 	//Clean Name
 	var name = req.params.name; 
-	name = name.replace("+", " ")
+	name = name.replace("+", " ");
 
     try {
         const guests = await Guests.findOne({ name: name }).exec();
@@ -88,5 +88,23 @@ router.get('/party/:name', async (req, res) => {
         res.status(500).send('Server Error')
     }
 });
+
+// @route 	DELETE api/guests/party/:name
+// @desc 	Delete profile
+// @access 	Public
+
+router.delete('/party/:name', async (req,res) => {
+	//Clean Name
+	var name = req.params.name; 
+	name = name.replace("+", " ");
+
+	try {
+		const guests = await Guests.findOneAndRemove({name: name});
+		res.json({msg: 'Guest Deleted'});
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send('Server Error')
+	}
+})
 
 module.exports = router;
